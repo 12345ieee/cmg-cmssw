@@ -312,11 +312,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     generatorSuffix="_madgraph";
 
   RecoilCorrector* correctorRecoil_Z; // TYPE2
-  // Recol corrector configuration here:
-  bool doKeys = useRecoilCorr==3 ? true : false;
-  bool doAbsolute = false;
   
   if(useRecoilCorr>0){
+    bool doKeys = false;
+    bool doAbsolute = false;
+    if (useRecoilCorr==3 || useRecoilCorr==4) doKeys=true;
+    if (useRecoilCorr==4) doAbsolute=true;
+    
     TString model_name[2]={"fitresult_Add","fitresult_model2D"};
     
     // TKMET type2
