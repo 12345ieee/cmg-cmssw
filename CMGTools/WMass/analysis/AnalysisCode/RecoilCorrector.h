@@ -42,6 +42,7 @@ class RecoilCorrector
 {
   
 public:
+  RecoilCorrector(bool useKeys, bool useAbsolute, TString fNonClosure_name = "");
   RecoilCorrector(bool doKeys, string iNameZDat, string iNameZ_key, int iSeed=0xDEADBEEF,TString model_name = "fitresult_Add", TString fNonClosure_name = "");
   RecoilCorrector(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
   ~RecoilCorrector();
@@ -51,14 +52,14 @@ public:
   void CorrectType1(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0);
   void CorrectType2(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0,bool doSingleGauss=false);
   void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
-  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0,bool doSingleGauss=false, int mytype=0,bool key=false);
+  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0,int mytype=0);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
-  void addDataFile(std::string iNameDat, std::string iNameKeyDat, /* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */
-		   TString model_name = "fitresult_Add");
-  void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
+  void addTargetFile(std::string iNameTarget, TString model_name = "fitresult_Add");
+  void addDataFile(std::string iNameData, TString model_name = "fitresult_Add");
+  void addMCFile  (std::string iNameMC, TString model_name = "fitresult_Add");
   double NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
-  double NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
+  void NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
 
 protected:
   enum Recoil { 
@@ -83,15 +84,16 @@ protected:
   // void readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
   // std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,
   // std::string iFName,std::string iPrefix); 
-  void readRecoil(/* std::vector<double> &iSumEt, */
-                     std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
-                     std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
-		     std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,//std::vector<TF1*> &iU1Sig3Fit,
-                     std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
-                     std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
-		     std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-                     std::string iFName,std::string iFKeyName, std::string iPrefix,int vtxBin, int mytype=0,/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */TString model_name = "fitresult_Add");
-                     
+  void readRecoil(
+                  std::vector<TF1*> &iU1Fit,    std::vector<TF1*> &iU1MRMSFit,
+                  std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,  std::vector<TF1*> &iU1RMS3Fit,
+                  std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,
+                  std::vector<TF1*> &iU2Fit,    std::vector<TF1*> &iU2MRMSFit,
+                  std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,  std::vector<TF1*> &iU2RMS3Fit,
+                  std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,
+                  std::string iFName , std::string iPrefix, int vtxBin, int mytype=0, TString model_name = "fitresult_Add"
+  );
+  
   void readCorr(std::string iName,//int iType=2,
   std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
   std::vector<TF1*> &iF1F2U1U2Corr,std::vector<TF1*> &iF1F2U2U1Corr,int iType=2);
@@ -199,7 +201,7 @@ protected:
   void makeKeysVec(RooWorkspace *w, TFile *file, TString fit, std::vector<RooAbsReal*> &pdfUiCdfm, bool isU1);
   double diGausPVal(double iVal, double iFrac,double iSimga1,double iSigma2);
   double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA);
-  double triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1, double max);
+  double keysInvGraph(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, bool isU1, double max);
   // double triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA);
   double triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, double max);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
@@ -224,7 +226,6 @@ protected:
   RooFitResult* frU2[3][lNBins];
   TFile *fNonClosure; 
   TH2D *hNonClosure[2][2]; 
-  TRandom3 *fRandom; 
   vector<TF1*> fF1U1Fit; vector<TF1*> fF1U1RMSSMFit; vector<TF1*> fF1U1RMS1Fit; vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit; 
   vector<TF1*> fF1U2Fit; vector<TF1*> fF1U2RMSSMFit; vector<TF1*> fF1U2RMS1Fit; vector<TF1*> fF1U2RMS2Fit, fF1U2RMS3Fit, fF1U2FracFit, fF1U2Mean1Fit, fF1U2Mean2Fit;; 
   vector<TF1*> fF2U1Fit; vector<TF1*> fF2U1RMSSMFit; vector<TF1*> fF2U1RMS1Fit; vector<TF1*> fF2U1RMS2Fit, fF2U1RMS3Fit, fF2U1FracFit, fF2U1Mean1Fit, fF2U1Mean2Fit; 
@@ -249,7 +250,8 @@ protected:
   vector<TF1*> fM1M2U1U2Corr;   vector<TF1*> fM1M2U2U1Corr;
   int fId; int fJet;
 
-  bool doKeys;
+  bool useKeys;
+  bool useAbsolute;
 
 };
 

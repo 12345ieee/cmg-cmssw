@@ -311,9 +311,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if (sampleName.Contains("DYJetsMadSig"))
     generatorSuffix="_madgraph";
 
-  RecoilCorrector*  correctorRecoil_Z; // TYPE2
-  bool doSingleGauss=false;
-  bool doKeys= useRecoilCorr==3 ? true : false;
+  RecoilCorrector* correctorRecoil_Z; // TYPE2
+  // Recol corrector configuration here:
+  bool doKeys = useRecoilCorr==3 ? true : false;
+  bool doAbsolute = false;
+  
   if(useRecoilCorr>0){
     TString model_name[2]={"fitresult_Add","fitresult_model2D"};
     
@@ -321,18 +323,18 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     int model_name_idx=0;
     string fileCorrectTo = /*POW */ "../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     string fileZmmMC =     /*POW */ "../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
-    // need to add the half stat
     string fileZmmData =   /*DATA*/ "../RecoilCode/NOV30/recoilfit_NOV30_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
     if(correctToMadgraph) fileZmmData = /*MAD */ "../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
     // string fileZmmData =   /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
-
-    // the sample are in the root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV30/; download from there
-    string fileZmmKeysCorrectTo = "../RecoilCode/NOV30/keysrecoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_powheg.root";
-    string fileZmmKeysMC = "../RecoilCode/NOV30/keysrecoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_powheg.root";
-    // need to add the half stat
-    string fileZmmKeysData = "../RecoilCode/NOV30/keysrecoilfit_NOV30_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
-    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/NOV30/keysrecoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
+    
+    if (doKeys) {
+      // the sample are in the root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV30/; download from there
+      fileCorrectTo = /*POW */ "../RecoilCode/NOV30/keysrecoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_powheg.root";
+      fileZmmMC =     /*POW */ "../RecoilCode/NOV30/keysrecoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_powheg.root";
+      fileZmmData =   /*DATA*/ "../RecoilCode/NOV30/keysrecoilfit_NOV30_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+      if(correctToMadgraph) fileZmmData = /*MAD*/"../RecoilCode/NOV30/keysrecoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
+    }
 
     //    string fileZmmKeysCorrectTo = "../RecoilCode/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     //    string fileZmmKeysMC = "../RecoilCode/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
@@ -340,12 +342,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //    string fileZmmKeysData = "../RecoilCode/NOV25/keysrecoilfit_NOV25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
     //    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
+    cout << "INITIALIZING RECOIL CORRECTOR" << endl;
+    correctorRecoil_Z = new RecoilCorrector(doKeys, doAbsolute, "../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z->addTargetFile(fileCorrectTo.c_str(), model_name[0]);
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name[model_name_idx] );
+    correctorRecoil_Z->addDataFile(  fileZmmData.c_str(),   model_name[model_name_idx] );
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
-    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name[0]);
+    correctorRecoil_Z->addMCFile(    fileZmmMC.c_str(),     model_name[0]);
 
   }
 
@@ -876,7 +880,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               ZNocorr.Pt(),ZNocorr.Phi(),
                               u1_recoil, u2_recoil,
                               RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                              rapBin,doSingleGauss,1,doKeys);
+                              rapBin,1);
                     }else{
                       correctorRecoil_Z->CorrectMET3gaus(
                               met_trasv,metphi_trasv,
@@ -884,7 +888,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               ZNocorr.Pt(),ZNocorr.Phi(),
                               u1_recoil, u2_recoil,
                               0, 0, 0,
-                              rapBin,doSingleGauss,1,doKeys);
+                              rapBin,1);
                     }
                     if(first_time_in_the_event && m==m_start && n==0){
                       // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
@@ -902,7 +906,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 ZNocorr.Pt(),ZNocorr.Phi(),
                                 u1_recoil, u2_recoil,
                                 0, 0, 0,
-                                rapBin,doSingleGauss,1,doKeys);
+                                rapBin,1);
                       }else{
                         // cout << " met_trasvCentral = met_trasv" << endl;
                         met_trasvCentral    = met_trasv;
@@ -1207,9 +1211,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 int i_ptbin = hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())>0 ? hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())-1 : 0 ;
                                 // cout << " i_ptbin= " << i_ptbin<< endl;;
                                 // hratioAngCoefSF[i_rapbin][i_ptbin]->Print();
-                                int costh_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetXaxis()->FindBin(costh_CS);
+                                // int costh_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetXaxis()->FindBin(costh_CS);
                                 // cout << " costh_bin= " << costh_bin<< endl;;
-                                int phi_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetYaxis()->FindBin(TMath::Abs(phi_CS));
+                                // int phi_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetYaxis()->FindBin(TMath::Abs(phi_CS));
                                 // cout << " phi_bin= " << phi_bin<< endl;;
                                 common_stuff::plot1D(Form("costh_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                         costh_CS, weight, h_1d, 12, -1, 1);
